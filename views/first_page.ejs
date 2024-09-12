@@ -1,0 +1,26 @@
+<%- include("header") %>
+
+  <nav class="navbar">
+    <div class="nav-left">
+      <a href="/instructor-login">Instructor's Login</a>
+    </div>
+    <div class="nav-left"></div>
+      <a href="/profile">Profile</a>
+    </div>
+    <div class="nav-right">
+      <a href="/logout">Logout</a>
+    </div>
+  </nav>
+
+  <!-- Course Grid Section -->
+  <h1>Available Courses</h1>
+  <div class="course-grid-container">
+    <% courses.forEach(function(course) { %>
+      <div class="course-card">
+        <div class="course-code"><%= course.code %></div>
+        <div class="course-name"><%= course.name %></div>
+      </div>
+    <% }) %>
+  </div>
+
+<%- include("footer") %>

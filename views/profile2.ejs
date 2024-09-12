@@ -1,0 +1,60 @@
+<%- include("header") %>
+
+    <nav class="navbar">
+        <div class="nav-left">
+          <a href="/first_page">Home</a>
+        </div>
+        <div class="nav-left"></div>
+          <a href="/">My courses</a>
+        </div>
+        <div class="nav-right">
+          <a href="/logout">Logout</a>
+        </div>
+      </nav>
+  <!-- Profile Section -->
+  <div class="profile-container">
+    <!-- Contact Info -->
+    <div class="contact-info">
+      <h2>Contact Information</h2>
+      <p><strong>Twitter:</strong> <%= twitter || 'N/A' %></p>
+      <p><strong>LinkedIn:</strong> <%= linkedin || 'N/A' %></p>
+      <p><strong>GitHub:</strong> <%= github || 'N/A' %></p>
+      <p><strong>Codeforces:</strong> <%= codeforces || 'N/A' %></p>
+    </div>
+
+    <!-- Profile Picture -->
+    <div class="profile-picture-section">
+      <h2><%= name || 'User' %></h2>
+      <img src="/<%= path %>" alt="Profile Picture" class="profile-picture">
+      <form action="/upload" method="POST" enctype="multipart/form-data">
+        <input type="file" name="profilePicture">
+        <button type="submit">Upload New Picture</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Update Contact Info Form -->
+  <div class="update-form-container">
+    <h2>Update Contact Information</h2>
+    <form action="/update-contact" method="POST">
+      <div class="form-group">
+        <label for="twitter">Twitter</label>
+        <input type="text" id="twitter" name="twitter" value="<%= twitter || null %>">
+      </div>
+      <div class="form-group">
+        <label for="linkedin">LinkedIn</label>
+        <input type="text" id="linkedin" name="linkedin" value="<%= linkedin || null %>">
+      </div>
+      <div class="form-group">
+        <label for="github">GitHub</label>
+        <input type="text" id="github" name="github" value="<%= github || null %>">
+      </div>
+      <div class="form-group">
+        <label for="codeforces">Codeforces</label>
+        <input type="text" id="codeforces" name="codeforces" value="<%= codeforces || null %>">
+      </div>
+      <button type="submit">Update Info</button>
+    </form>
+  </div>
+
+<%- include("footer") %>

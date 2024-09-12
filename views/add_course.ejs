@@ -1,0 +1,21 @@
+<%- include("header") %>
+
+<div class="container">
+    <h1>Let's launch a new course!</h1>
+    
+    <form action="/add-course" method="POST">
+      <div class="form-group">
+        <label for="courseCode">Course Code</label>
+        <input type="text" id="courseCode" name="courseCode" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="courseName">Course Name</label>
+        <input type="text" id="courseName" name="courseName" required>
+      </div>
+
+      <button type="submit">Launch Course</button>
+    </form>
+  </div>
+
+  <%- include("footer") %>

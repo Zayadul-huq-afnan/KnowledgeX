@@ -1,0 +1,27 @@
+<%- include("header") %>
+<nav class="navbar">
+  <div class="nav-left">
+    <a href="/first_page">Home</a>
+  </div>
+  <div class="nav-right">
+    <a href="/logout">Logout</a>
+  </div>
+</nav>
+<div class="launch-button">
+    <button onclick="window.location.href='/add-course'">Launch a new course</button>
+  </div>
+
+  <!-- Heading for the user's courses -->
+  <div class="heading">Courses Launched by You</div>
+
+  <!-- Grid to display the courses -->
+  <div class="course-grid-container">
+    <% courses.forEach(function(course) { %>
+      <div class="course-card">
+        <div class="course-code"><%= course.code %></div>
+        <div class="course-name"><%= course.name %></div>
+      </div>
+    <% }) %>
+  </div>
+
+<%- include("footer") %>
