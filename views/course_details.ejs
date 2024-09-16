@@ -1,0 +1,16 @@
+<%- include("header") %>
+
+<div class="course-grid-container">
+    <form action="/course_contents" method="POST">
+        <input type="hidden" name="courseCode" value="<%= course_code %>">
+        <button type="submit">view contents</button>
+      </form>
+      <form action="/enroll_requests" method="POST">
+        <input type="hidden" name="courseCode" value="<%= course_code %>">
+        <button type="submit">Enroll Requests</button>
+      </form>
+    <!-- <button class="button" onclick="location.href='/view-content'">View Content</button>
+    <button class="button" onclick="location.href='/enroll-requests'">Enroll Requests</button> -->
+</div>
+
+<%- include("footer") %>

@@ -1,0 +1,17 @@
+<%- include("header") %>
+<h1>Enroll requests</h1>
+<div class="request-list-container"></div>
+    <ul class="user-list">
+        <% request_list.forEach(function(user) { %>
+            <li class="user-item">
+                <span><%= user.name %></span>
+                <div class="buttons">
+                    <a href="/accept/<%= user.name %>/<%= course_code %>" class="request-button">Accept</a>
+                    <a href="/reject/<%= user.name %>/<%= course_code %>" class="request-button reject">Reject</a>
+                </div>
+            </li>
+        <% }); %>
+    </ul>
+</div>
+
+<%- include("footer") %>

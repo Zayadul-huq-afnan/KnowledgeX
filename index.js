@@ -13,6 +13,8 @@ const passport = require("passport");
 const passportLocal = require("passport-local");
 const multer = require("multer");
 const path = require("path");
+const e = require("express");
+const { constrainedMemory } = require("process");
 
 const app = express();
 
@@ -141,20 +143,20 @@ app.get("/instructor-login", function (req, res) {
       }
 
       if (result.length > 0) {
-        const query = 'SELECT course_code, course_name FROM course_list WHERE instructor_email = ?'
-        connection.query(query,[req.user.id] ,(error, lists) => {
+        const query = "SELECT course_code, course_name FROM course_list WHERE instructor_email = ?";
+        connection.query(query, [req.user.id], (error, lists) => {
           if (error) throw error;
-        
+
           // Map the SQL results to an array of pairs
-          const courses = lists.map(row => {
+          const courses = lists.map((row) => {
             return {
               code: row.course_code,
-              name: row.course_name
+              name: row.course_name,
             };
-          })
+          });
           //console.log(courses);
-          res.render("instructor_view", {courses : courses})
-      })
+          res.render("instructor_view", { courses: courses });
+        });
         // const courses = [
         //   { code: "CS101", name: "Introduction to Computer Science" },
         //   { code: "MATH201", name: "Calculus II" },
@@ -162,13 +164,11 @@ app.get("/instructor-login", function (req, res) {
         // ];
 
         // res.render("instructor_view", { courses: courses });
-      } 
-      else {
+      } else {
         res.redirect("/first_page");
       }
     });
-  }
-  else{
+  } else {
     res.redirect("/first_page");
   }
   //console.log(req.user);
@@ -189,22 +189,21 @@ app.get("/first_page", function (req, res) {
     // ];
     // res.render("first_page", { courses: courses });
 
-    const query = 'SELECT course_code, course_name FROM course_list'
+    const query = "SELECT course_code, course_name FROM course_list";
     connection.query(query, (error, results) => {
       if (error) throw error;
-    
+
       // Map the SQL results to an array of pairs
-      const courses = results.map(row => {
+      const courses = results.map((row) => {
         return {
           code: row.course_code,
-          name: row.course_name
+          name: row.course_name,
         };
-      })
-      console.log(courses);
-      res.render("first_page", {courses : courses})
-  })
-}
-  else {
+      });
+      //console.log(courses);
+      res.render("first_page", { courses: courses });
+    });
+  } else {
     res.redirect("/login");
   }
 });
@@ -215,14 +214,20 @@ app.get("/add-course", function (req, res) {
 
 app.get("/profile", function (req, res) {
   if (req.isAuthenticated()) {
-
-    const query = "SELECT email, linkedin, github, twitter, codeforces, name , path FROM profile WHERE email = ?";
-    connection.query(query, [req.user.id] , (error, results) =>{
-      if(error)throw error;
-      console.log(results[0]);
-      res.render("profile2", {twitter: results[0].twitter, linkedin : results[0].linkedin, github : results[0].github, codeforces : results[0].github,  name : results[0].name , path: results[0].path });
-
-    })
+    const query =
+      "SELECT email, linkedin, github, twitter, codeforces, name , path FROM profile WHERE email = ?";
+    connection.query(query, [req.user.id], (error, results) => {
+      if (error) throw error;
+      //console.log(results[0]);
+      res.render("profile2", {
+        twitter: results[0].twitter,
+        linkedin: results[0].linkedin,
+        github: results[0].github,
+        codeforces: results[0].github,
+        name: results[0].name,
+        path: results[0].path,
+      });
+    });
     //res.render("profile", { user: req.user });
   } else {
     res.redirect("/");
@@ -237,19 +242,147 @@ app.get("/test", function (req, res) {
   const query = "SELECT path FROM demo WHERE email = ?";
   connection.query(query, [req.user.id], (error, results) => {
     if (error) {
-      console.error('Error querying database:', error);
+      console.error("Error querying database:", error);
       return;
     }
-  
+
     if (results.length > 0) {
       const filePath = results[0].path;
-      console.log(filePath);
-      res.render("test" , {path : filePath});
+      //console.log(filePath);
+      res.render("test", { path: filePath });
     } else {
-      console.log('No user found with the given email.');
+      console.log("No user found with the given email.");
     }
   });
 });
+
+//app.get()
+
+app.get("/enroll_reuqest_list", function(req, res){
+  const course_code = req.query.course_code;
+  const username = req.query.username;
+  //console.log(course_code);
+  //console.log(username);
+
+  const query  = "DELETE FROM enroll_request WHERE requested_user = ? AND course_code = ?";
+
+    connection.query(query, [username, course_code], (error, results) => {
+      //console.log("deleted");
+
+      if(error) throw error;
+      //res.send("Deleted");
+
+      const query2 = "SELECT requested_user FROM enroll_request WHERE course_code = ?";
+
+      connection.query(query2, [course_code], (err, lists) =>{
+        if(err) throw err;
+        const request_list = lists.map((row) => {
+          return {
+            name: row.requested_user,
+          };
+        });
+  
+          res.render("enroll_request", {request_list : request_list , course_code : course_code});
+      })
+      });
+
+})
+
+app.get("/reject/:requested_user/:course_code", function(req, res){
+  const user_name = req.params.requested_user;
+  const course_code = req.params.course_code;
+  res.redirect(`/enroll_reuqest_list?username=${user_name}&course_code=${course_code}`);
+})
+
+app.get("/chapter_list" , function(req, res){
+
+    const course_code = req.query.course_code;
+    const query = "SELECT course_code, chapter_name from course_contents WHERE course_code = ?"
+
+    connection.query(query, [course_code] , (error, results) =>{
+      if(error)  throw error
+  
+      const chapter_list = results.map((row) => {
+        return {
+          chapter_name: row.chapter_name,
+        };
+      });
+  
+        res.render("chapter_list", {chapter_list : chapter_list, course_code : course_code});
+  
+    })
+
+})
+
+app.get("/chapter_contents/:course_code/:chapter_name", function(req, res){
+   
+   const course_code = req.params.course_code;
+   const chapter_name = req.params.chapter_name;
+   //console.log(req.params);
+   //console.log(course_code);
+   //console.log(chapter_name);
+   
+   const query = "SELECT video_path FROM course_contents WHERE course_code = ? AND chapter_name = ?";
+
+   connection.query(query, [course_code, chapter_name], (error, results) =>{
+    if(error)throw error;
+
+    if(results.length == 0){
+      //console.log("null");
+      res.render("chapter_detail", {chapter_name: chapter_name, video_path : "@" , course_code :course_code });
+    }
+    else{
+      //console.log(results[0].video_path);
+      const file_path = String(results[0].video_path);
+      //console.log("video");
+      //console.log("y");
+      //console.log(file_path);
+      res.render("chapter_detail", {chapter_name: chapter_name, video_path: file_path , course_code :course_code });
+    }
+   })
+   
+})
+
+app.get("/chapter_contents", function(req, res){
+  const course_code = req.query.course_code;
+  const chapter_name = req.query.chapter_name;
+  const file_path = req.query.file_path;
+  console.log(file_path);
+  res.render("chapter_detail", {chapter_name: chapter_name, video_path : file_path , course_code :course_code });
+})
+
+app.get("/accept/:requested_user/:course_code", function(req, res){
+
+  const user_name = req.params.requested_user;
+  const course_code = req.params.course_code;
+  //console.log(req.params.requested_user);
+  //console.log(req.params.course_code);
+
+  const query = "SELECT * FROM enrolled_users WHERE username = ? AND course_code = ?";
+  
+  connection.query(query, [user_name, course_code], (error, results) => {
+    if (error) {
+      console.error('Error checking existing request:', error);
+      return res.status(500).send('Internal Server Error');
+    }
+    
+    if (results.length === 0) {
+      
+      const query2 = "INSERT INTO enrolled_users (username, course_code) VALUES (?, ?)";
+
+      connection.query(query2, [user_name, course_code], (err, results2) => {
+        if (err) {
+          throw err;
+        }
+
+        res.redirect(`/enroll_reuqest_list?username=${user_name}&course_code=${course_code}`);
+      });
+    } else {
+      // Request already exists
+      res.send("Request already exists");
+    }
+  });
+})
 
 // app.get("/test", function(req, res){
 //   res.render("test");
@@ -275,19 +408,16 @@ app.post("/register", function (req, res) {
 
       //res.send("In");
       const query = "INSERT INTO profile (email, name, path) VALUES (?, ? , ?)";
-      connection.query(query, [email, name, default_path], (err, vals, fiel) => {
-
-        if(err) throw err;
-        res.redirect("/first_page");
-      })
+      connection.query(query,[email, name, default_path],(err, vals, fiel) => {
+          if (err) throw err;
+          res.redirect("/first_page");
+        }
+      );
     });
   });
 });
 
-app.post(
-  "/login",
-  passport.authenticate("local", { failureRedirect: "/login" }),
-  function (req, res) {
+app.post("/login",passport.authenticate("local", { failureRedirect: "/login" }),function (req, res) {
     res.redirect("/first_page");
   }
 );
@@ -320,7 +450,7 @@ app.post("/add-course", function (req, res) {
 
 app.post("/upload", upload.single("profilePicture"), (req, res) => {
   const userId = req.user.id;
-  console.log(req.file);
+  //console.log(req.file);
   const filePath = path.join("upload", req.file.filename).replace(/\\/g, "/"); // Relative path
 
   // Update the user's profile with the new profile picture path
@@ -335,20 +465,138 @@ app.post("/upload", upload.single("profilePicture"), (req, res) => {
   });
 });
 
-app.post("/update-contact" , function(req, res){
+app.post("/upload_video/:course_code/:chapter_name", upload.single("videoFile"), (req, res) => {
+
+  const course_code = req.params.course_code;
+  const chapter_name = req.params.chapter_name;
+
+  //console.log(course_code);
+  //console.log(chapter_name);
+  const userId = req.user.id;
+  //console.log(req.file);
+  const filePath = path.join("upload", req.file.filename).replace(/\\/g, "/"); // Relative path
+  //console.log(filePath);
+  // Update the user's profile with the new profile picture path
+  const query = "UPDATE  course_contents SET video_path = ? WHERE course_code = ? AND chapter_name = ?";
+  connection.query(query, [filePath, course_code, chapter_name], (error, results) => {
+    if (error) {
+      console.error("Error updating profile picture:", error);
+      return res.status(500).send("Error updating profile picture");
+    }
+    //console.log(results);
+
+    res.redirect(`/chapter_contents?course_code=${course_code}&chapter_name=${chapter_name}&file_path=${filePath}`);
+    //res.send("Suffessfully addded video!");
+    //res.redirect("/profile");
+  });
+});
+
+app.post("/update-contact", function (req, res) {
   twitter = req.body.twitter;
   github = req.body.github;
   linkedin = req.body.linkedin;
   codeforces = req.body.codeforces;
 
-  const query = "UPDATE profile SET twitter = ?, linkedin = ?, github = ?, codeforces = ? WHERE email = ? " ;
+  const query =
+    "UPDATE profile SET twitter = ?, linkedin = ?, github = ?, codeforces = ? WHERE email = ? ";
 
-  connection.query(query, [twitter, linkedin, github, codeforces, req.user.id], (error, results) =>{
-    if(error) throw error;
+  connection.query(
+    query,
+    [twitter, linkedin, github, codeforces, req.user.id],
+    (error, results) => {
+      if (error) throw error;
 
-    res.redirect("/profile");
-  })
+      res.redirect("/profile");
+    }
+  );
+});
+
+
+app.post("/enroll", function (req, res) {
+  const course_code = req.body.courseCode;
+  const user_name = req.user.id;
+  //console.log("id: ", user_name);
+
+  const checkQuery = "SELECT * FROM enroll_request WHERE requested_user = ? AND course_code = ?";
+  
+  connection.query(checkQuery, [user_name, course_code], (error, results) => {
+    if (error) {
+      console.error('Error checking existing request:', error);
+      return res.status(500).send('Internal Server Error');
+    }
+    
+    if (results.length === 0) {
+
+      const insertQuery = "INSERT INTO enroll_request (course_code, requested_user) VALUES (?, ?)";
+
+      connection.query(insertQuery, [course_code, user_name], (err, results2) => {
+        if (err) {
+          console.error('Error inserting request:', err);
+          //console.log(user_name);
+          return res.status(500).send('Internal Server Error');
+        }
+
+        res.send("Request sent");
+      });
+    } else {
+      // Request already exists
+      res.send("Request already exists");
+    }
+  });
+
+  // Debugging logs
+  //console.log("Course Code:", course_code);
+  //console.log("User Name:", user_name);
+});
+
+app.post("/course_details", function(req, res){
+  //console.log(req.body.courseCode);
+  const course_code = req.body.courseCode;
+  res.render("course_details", {course_code: course_code});
 })
+
+app.post("/enroll_requests", function(req, res){
+    const course_code = req.body.courseCode;
+    //console.log("sss: ", course_code);
+
+    const query = "SELECT requested_user FROM enroll_request WHERE course_code = ?";
+
+    connection.query(query, [course_code], (error, results) => {
+
+      if(error) throw error;
+
+      const request_list = results.map((row) => {
+        return {
+          name: row.requested_user,
+        };
+      });
+
+        res.render("enroll_request", {request_list : request_list , course_code : course_code});
+      });
+})
+
+app.post("/course_contents", function(req, res){
+  const course_code = req.body.courseCode;
+  res.redirect(`/chapter_list?course_code=${course_code}`);
+
+})
+
+app.post("/add_chapter/:course_code" , function(req, res){
+
+  const course_code = req.params.course_code;
+  const chapter_name = req.body.chapter_name;
+
+  const query = "INSERT INTO course_contents (course_code, chapter_name) VALUES (?, ?)";
+
+  connection.query(query, [course_code, chapter_name], (error, result) =>{
+    if(error) throw error
+
+    res.redirect(`/chapter_list?course_code=${course_code}`);
+  })
+  //console.log(req.params.course_code);
+  //console.log(req.body);
+})
+
 app.listen(3000, function () {
   console.log("App started on port 3000");
 });

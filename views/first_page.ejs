@@ -19,6 +19,10 @@
       <div class="course-card">
         <div class="course-code"><%= course.code %></div>
         <div class="course-name"><%= course.name %></div>
+        <form action="/enroll" method="POST">
+          <input type="hidden" name="courseCode" value="<%= course.code %>">
+          <button type="submit">Enroll in <%= course.name %></button>
+        </form>
       </div>
     <% }) %>
   </div>

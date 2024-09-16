@@ -228,3 +228,147 @@ button {
 button:hover {
   background-color: #218838;
 }
+
+/* user list */
+
+.user-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  width: 50%; /* Adjust as needed */
+}
+
+.user-item {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+
+
+.request-button {
+  padding: 5px 10px;
+  text-decoration: none;
+  background-color: #007bff;
+  color: white;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+}
+
+.request-button.reject {
+  background-color: #ff4d4d;
+}
+
+/* Prevent text from overlapping with the buttons */
+.user-item span {
+  flex-grow: 1;
+}
+
+.request-list-container {
+  display: flex;
+  justify-content: flex-start; /* Aligns the list to the left */
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .user-item {
+      flex-direction: column;
+      align-items: flex-start;
+  }
+
+  .request-button {
+      width: 100%;
+      margin-bottom: 5px;
+  }
+}
+
+/* chapter */
+
+
+.chapter-form-container {
+  margin-bottom: 20px;
+}
+
+.chapter-form-container input[type="text"] {
+  padding: 10px;
+  font-size: 16px;
+  width: 300px;
+  margin-right: 10px;
+}
+
+.chapter-form-container button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+}
+
+.chapter-form-container button:hover {
+  background-color: #0056b3;
+}
+
+
+/* chaper detail */
+
+v-body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 20px;
+  background-color: #f4f4f4;
+}
+
+v-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #333;
+  color: white;
+}
+
+v-header h1 {
+  margin: 0;
+}
+
+.upload-video {
+  margin-right: 20px;
+}
+
+.upload-video a {
+  color: white;
+  text-decoration: none;
+  background-color: #5cb85c;
+  padding: 10px 20px;
+  border-radius: 5px;
+}
+
+.upload-video a:hover {
+  background-color: #4cae4c;
+}
+
+.video-container {
+  margin-top: 20px;
+  text-align: center;
+}
+
+video {
+  width: 80%;
+  max-width: 800px;
+  height: auto;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.no-video {
+  font-size: 1.5em;
+  color: red;
+  margin-top: 20px;
+}

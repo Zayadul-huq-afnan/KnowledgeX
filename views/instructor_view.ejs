@@ -20,6 +20,10 @@
       <div class="course-card">
         <div class="course-code"><%= course.code %></div>
         <div class="course-name"><%= course.name %></div>
+        <form action="/course_details" method="POST">
+          <input type="hidden" name="courseCode" value="<%= course.code %>">
+          <button type="submit">view details</button>
+        </form>
       </div>
     <% }) %>
   </div>

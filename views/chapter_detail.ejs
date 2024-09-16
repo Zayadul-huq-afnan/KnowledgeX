@@ -1,0 +1,28 @@
+<%- include("header") %>
+<title><%= chapter_name %></title>
+ <!-- Header Section -->
+ <div class="v-header">
+    <h1><%= chapter_name %></h1>
+    <div class="upload-video">
+        <!-- Upload video form -->
+        <form action="/upload_video/<%= course_code %>/<%= chapter_name %>" method="POST" enctype="multipart/form-data">
+            <input type="file" name="videoFile" accept="video/*" required>
+            <button type="submit">Upload Video</button>
+        </form>
+    </div>
+</div>
+
+
+<!-- Video Section -->
+<div class="video-container">
+    <% if (video_path === '@') { %>
+        <div class="no-video">No video available</div>
+    <% } else { %>
+        <video controls>
+            <source src="<%= video_path %>" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    <% } %>
+</div>
+
+<%- include("footer") %>

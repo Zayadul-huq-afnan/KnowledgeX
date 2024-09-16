@@ -1,0 +1,26 @@
+<%- include("header") %>
+
+<h1>Chapter of <%= course_code %></h1>
+
+<!-- Add Chapter Form -->
+<div class="chap-form-container">
+    <form action="/add_chapter/<%= course_code %>" method="POST">
+        <input type="text" name="chapter_name" placeholder="Enter chapter name" required>
+        <button type="submit">Add Chapter</button>
+    </form>
+</div>
+
+<!-- User List -->
+<ul class="user-list">
+    <% chapter_list.forEach(function(chapter) { %>
+        <li class="user-item">
+            <span><%= chapter.chapter_name %></span>
+            <div class="buttons">
+                <% console.log(chapter.chapter_name) %>
+                <a href="/chapter_contents/<%= course_code %>/<%= String(chapter.chapter_name) %>" class="request-button">view</a>
+            </div>
+        </li>
+    <% }); %>
+</ul>
+
+<%- include("footer") %>
